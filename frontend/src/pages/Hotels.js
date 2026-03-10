@@ -1,0 +1,120 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import HotelCard from "../components/common/HotelCard";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import { fetchHotels, searchHotels } from "../redux/slices/hotelSlice";
+
+function Hotels() {
+  const dispatch = useDispatch();
+  const { hotels, loading } = useSelector((state) => state.hotels);
+  const safeHotels = Array.isArray(hotels) ? hotels : [];
+
+  const [filters, setFilters] = useState({
+    city: "",
+    country: "",
+    minRating: "",
+    amenities: "",
+  });
+
+  useEffect(() => {
+    dispatch(fetchHotels());
+  }, [dispatch]);
+
+  const onFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const onSearch = (e) => {
+    e.preventDefault();
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([, value]) => String(value).trim() !== "",
+      ),
+    );
+    dispatch(searchHotels(params));
+  };
+
+  const onReset = () => {
+    setFilters({ city: "", country: "", minRating: "", amenities: "" });
+    dispatch(fetchHotels());
+  };
+
+  return (
+    <section className="container-pad py-10">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl">Hotels</h1>
+          <p className="text-sm text-brand-ink/75">
+            Search destinations and compare available properties.
+          </p>
+        </div>
+      </div>
+
+      <form
+        className="panel mb-6 grid gap-3 p-4 md:grid-cols-5"
+        onSubmit={onSearch}
+      >
+        <input
+          className="rounded-xl border border-brand-ink/20 bg-white px-3 py-2 text-sm"
+          name="city"
+          onChange={onFilterChange}
+          placeholder="City"
+          value={filters.city}
+        />
+        <input
+          className="rounded-xl border border-brand-ink/20 bg-white px-3 py-2 text-sm"
+          name="country"
+          onChange={onFilterChange}
+          placeholder="Country"
+          value={filters.country}
+        />
+        <input
+          className="rounded-xl border border-brand-ink/20 bg-white px-3 py-2 text-sm"
+          max="5"
+          min="1"
+          name="minRating"
+          onChange={onFilterChange}
+          placeholder="Min rating"
+          type="number"
+          value={filters.minRating}
+        />
+        <input
+          className="rounded-xl border border-brand-ink/20 bg-white px-3 py-2 text-sm"
+          name="amenities"
+          onChange={onFilterChange}
+          placeholder="Amenities (comma separated)"
+          value={filters.amenities}
+        />
+        <div className="flex gap-2">
+          <button className="btn-primary flex-1" type="submit">
+            Search
+          </button>
+          <button
+            className="btn-secondary flex-1"
+            onClick={onReset}
+            type="button"
+          >
+            Reset
+          </button>
+        </div>
+      </form>
+
+      {loading ? (
+        <LoadingSpinner />
+      ) : safeHotels.length === 0 ? (
+        <div className="panel p-6 text-center text-brand-ink/75">
+          No hotels matched your filters.
+        </div>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {safeHotels.map((hotel) => (
+            <HotelCard hotel={hotel} key={hotel._id || hotel.name} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default Hotels;
