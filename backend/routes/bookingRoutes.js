@@ -1,25 +1,24 @@
 const express = require("express");
 const router = express.Router();
+const { protect, authorize } = require("../middleware/auth");
+const {
+  getUserBookings,
+  getAllBookingsAdmin,
+  getBookingById,
+  createBooking,
+  cancelBooking,
+  modifyUserBooking,
+  approveBooking,
+  updateBookingStatus,
+} = require("../controllers/bookingController");
 
-// Route placeholders
-router.get("/", (req, res) => {
-  res.json({ message: "Get all bookings route" });
-});
-
-router.get("/:id", (req, res) => {
-  res.json({ message: "Get booking by ID route" });
-});
-
-router.post("/", (req, res) => {
-  res.json({ message: "Create booking route" });
-});
-
-router.put("/:id", (req, res) => {
-  res.json({ message: "Update booking route" });
-});
-
-router.delete("/:id", (req, res) => {
-  res.json({ message: "Cancel booking route" });
-});
+router.get("/", protect, getUserBookings);
+router.get("/admin/all", protect, authorize("admin"), getAllBookingsAdmin);
+router.get("/:id", protect, getBookingById);
+router.post("/", protect, createBooking);
+router.delete("/:id", protect, cancelBooking);
+router.patch("/:id/modify", protect, modifyUserBooking);
+router.patch("/:id/approve", protect, authorize("admin"), approveBooking);
+router.patch("/:id/status", protect, authorize("admin"), updateBookingStatus);
 
 module.exports = router;

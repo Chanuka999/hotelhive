@@ -58,6 +58,8 @@ const BookingSchema = new mongoose.Schema({
     paymentId: String,
     paymentMethod: String,
     paidAt: Date,
+    refundedAt: Date,
+    refundId: String,
   },
   specialRequests: {
     type: String,
