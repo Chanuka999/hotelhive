@@ -31,22 +31,31 @@ const parseNumber = (value, fallback) => {
 };
 
 exports.getHotels = asyncHandler(async (req, res) => {
-  const hotels = await Hotel.find({ isActive: true }).populate(
-    "owner",
-    "name email",
+  const hotels = await Hotel.find({ isActive: true })
+    .populate("owner", "name email")
+    .populate({
+      path: "rooms",
+      match: { isActive: true },
+    });
+
+  const availableHotels = hotels.filter((hotel) =>
+    (hotel.rooms || []).some((room) => room.availableRooms > 0),
   );
 
   res.status(200).json({
     success: true,
-    count: hotels.length,
-    data: hotels,
+    count: availableHotels.length,
+    data: availableHotels,
   });
 });
 
 exports.getHotelById = asyncHandler(async (req, res, next) => {
   const hotel = await Hotel.findById(req.params.id)
     .populate("owner", "name email")
-    .populate("rooms");
+    .populate({
+      path: "rooms",
+      match: { isActive: true },
+    });
 
   if (!hotel || !hotel.isActive) {
     const error = new Error("Hotel not found");
@@ -62,6 +71,7 @@ exports.getHotelById = asyncHandler(async (req, res, next) => {
 
 exports.searchHotels = asyncHandler(async (req, res) => {
   const {
+    location,
     city,
     country,
     minRating,
@@ -70,6 +80,7 @@ exports.searchHotels = asyncHandler(async (req, res) => {
     minPrice,
     maxPrice,
     roomType,
+    availableOnly,
   } = req.query;
 
   const query = { isActive: true };
@@ -77,6 +88,15 @@ exports.searchHotels = asyncHandler(async (req, res) => {
   if (city) {
     query["address.city"] = { $regex: city, $options: "i" };
   }
+
+  if (location) {
+    query.$or = [
+      { "address.city": { $regex: location, $options: "i" } },
+      { "address.state": { $regex: location, $options: "i" } },
+      { "address.country": { $regex: location, $options: "i" } },
+    ];
+  }
+
   if (country) {
     query["address.country"] = { $regex: country, $options: "i" };
   }
@@ -96,19 +116,26 @@ exports.searchHotels = asyncHandler(async (req, res) => {
     }
   }
 
-  let hotels = await Hotel.find(query).populate("rooms");
+  let hotels = await Hotel.find(query).populate({
+    path: "rooms",
+    match: { isActive: true },
+  });
 
-  if (minPrice || maxPrice || roomType) {
+  if (minPrice || maxPrice || roomType || availableOnly === "true") {
     const min = parseNumber(minPrice, 0);
     const max = parseNumber(maxPrice, Number.MAX_SAFE_INTEGER);
+    const onlyAvailable = availableOnly === "true";
 
     hotels = hotels.filter((hotel) => {
       const discountFactor = 1 - parseNumber(hotel.discountPercent, 0) / 100;
       const matchingRooms = hotel.rooms.filter((room) => {
         const typeMatches = roomType ? room.roomType === roomType : true;
+        const availabilityMatches = onlyAvailable
+          ? room.availableRooms > 0
+          : true;
         const effectivePrice = room.price * discountFactor;
         const priceMatches = effectivePrice >= min && effectivePrice <= max;
-        return typeMatches && priceMatches;
+        return typeMatches && priceMatches && availabilityMatches;
       });
       return matchingRooms.length > 0;
     });
