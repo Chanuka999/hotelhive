@@ -38,11 +38,28 @@ export const cancelBooking = createAsyncThunk(
   "bookings/cancel",
   async (id, thunkAPI) => {
     try {
-      await bookingService.cancelBooking(id);
-      return id;
+      const response = await bookingService.cancelBooking(id);
+      return (
+        response?.data || response?.booking || { _id: id, status: "cancelled" }
+      );
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.message || "Failed to cancel booking",
+      );
+    }
+  },
+);
+
+export const modifyBooking = createAsyncThunk(
+  "bookings/modify",
+  async ({ id, payload }, thunkAPI) => {
+    try {
+      return await bookingService.modifyBooking(id, payload);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.error ||
+          error.message ||
+          "Failed to modify booking",
       );
     }
   },
@@ -81,10 +98,28 @@ const bookingSlice = createSlice({
         toast.error(String(action.payload));
       })
       .addCase(cancelBooking.fulfilled, (state, action) => {
-        state.bookings = state.bookings.filter(
-          (item) => item._id !== action.payload,
+        const updatedBooking = action.payload;
+        state.bookings = state.bookings.map((item) =>
+          item._id === updatedBooking?._id
+            ? { ...item, ...updatedBooking, status: "cancelled" }
+            : item,
         );
         toast.info("Booking cancelled");
+      })
+      .addCase(modifyBooking.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(modifyBooking.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookings = state.bookings.map((item) =>
+          item._id === action.payload?._id ? action.payload : item,
+        );
+        toast.success("Booking updated");
+      })
+      .addCase(modifyBooking.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(String(action.payload));
       });
   },
 });
