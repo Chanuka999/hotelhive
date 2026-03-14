@@ -178,7 +178,17 @@ function AdminAnalytics() {
   const totals = analytics?.totals || {
     totalBookings: 0,
     totalHotels: 0,
+    totalCustomers: 0,
+    totalRooms: 0,
     totalRevenue: 0,
+  };
+
+  const revenueStats = analytics?.revenueStats || {
+    thisMonthRevenue: 0,
+    lastMonthRevenue: 0,
+    revenueGrowthPercent: 0,
+    averageBookingValue: 0,
+    occupancyRate: 0,
   };
 
   const monthlyRevenue = Array.isArray(analytics?.monthlyRevenue)
@@ -219,10 +229,58 @@ function AdminAnalytics() {
         </button>
       </div>
 
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
+      <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <StatCard title="Total bookings" value={totals.totalBookings} />
         <StatCard title="Total hotels" value={totals.totalHotels} />
+        <StatCard title="Total rooms" value={totals.totalRooms} />
+        <StatCard title="Total customers" value={totals.totalCustomers} />
         <StatCard title="Revenue" value={toCurrency(totals.totalRevenue)} />
+      </div>
+
+      <div className="mb-6 panel p-4">
+        <h2 className="mb-3 font-semibold">Revenue Statistics</h2>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="rounded-xl bg-white/60 p-3">
+            <p className="text-xs uppercase tracking-wide text-brand-ink/70">
+              This month
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {toCurrency(revenueStats.thisMonthRevenue)}
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/60 p-3">
+            <p className="text-xs uppercase tracking-wide text-brand-ink/70">
+              Last month
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {toCurrency(revenueStats.lastMonthRevenue)}
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/60 p-3">
+            <p className="text-xs uppercase tracking-wide text-brand-ink/70">
+              Growth
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {revenueStats.revenueGrowthPercent}%
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/60 p-3">
+            <p className="text-xs uppercase tracking-wide text-brand-ink/70">
+              Avg booking value
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {toCurrency(revenueStats.averageBookingValue)}
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/60 p-3">
+            <p className="text-xs uppercase tracking-wide text-brand-ink/70">
+              Occupancy rate
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {revenueStats.occupancyRate}%
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
