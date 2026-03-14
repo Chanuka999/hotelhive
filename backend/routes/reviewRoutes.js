@@ -1,21 +1,25 @@
 const express = require("express");
 const router = express.Router();
+const { protect, authorize } = require("../middleware/auth");
+const {
+  getReviewsByHotel,
+  getAllReviewsAdmin,
+  createReview,
+  updateReview,
+  deleteReview,
+  deleteInappropriateReview,
+} = require("../controllers/reviewController");
 
-// Route placeholders
-router.get("/hotel/:hotelId", (req, res) => {
-  res.json({ message: "Get reviews for hotel route" });
-});
-
-router.post("/", (req, res) => {
-  res.json({ message: "Create review route" });
-});
-
-router.put("/:id", (req, res) => {
-  res.json({ message: "Update review route" });
-});
-
-router.delete("/:id", (req, res) => {
-  res.json({ message: "Delete review route" });
-});
+router.get("/hotel/:hotelId", getReviewsByHotel);
+router.get("/admin/all", protect, authorize("admin"), getAllReviewsAdmin);
+router.post("/", protect, createReview);
+router.put("/:id", protect, updateReview);
+router.delete("/:id", protect, deleteReview);
+router.delete(
+  "/admin/:id",
+  protect,
+  authorize("admin"),
+  deleteInappropriateReview,
+);
 
 module.exports = router;
