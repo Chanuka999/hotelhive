@@ -26,8 +26,14 @@ const getCurrentUser = async () => {
   return data.user || data;
 };
 
+const updateProfile = async (payload) => {
+  const { data } = await api.put("/auth/me", payload);
+  return data.user || data;
+};
+
 export default {
   register,
   login,
   getCurrentUser,
+  updateProfile,
 };

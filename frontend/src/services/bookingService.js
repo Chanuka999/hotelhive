@@ -39,8 +39,37 @@ const cancelBooking = async (id) => {
   return data;
 };
 
+const modifyBooking = async (id, payload) => {
+  const { data } = await api.patch(`/bookings/${id}/modify`, payload);
+  return data.data || data;
+};
+
+const getAllBookingsAdmin = async () => {
+  const { data } = await api.get("/bookings/admin/all");
+  return toBookingArray(data);
+};
+
+const approveBooking = async (id) => {
+  const { data } = await api.patch(`/bookings/${id}/approve`);
+  return data.data || data;
+};
+
+const updateBookingStatus = async (id, status, cancellationReason = "") => {
+  const payload = { status };
+  if (status === "cancelled" && cancellationReason) {
+    payload.cancellationReason = cancellationReason;
+  }
+
+  const { data } = await api.patch(`/bookings/${id}/status`, payload);
+  return data.data || data;
+};
+
 export default {
   getBookings,
   createBooking,
   cancelBooking,
+  modifyBooking,
+  getAllBookingsAdmin,
+  approveBooking,
+  updateBookingStatus,
 };
