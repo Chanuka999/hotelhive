@@ -1,136 +1,108 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 
-const navClass = ({ isActive }) =>
-  `rounded-lg px-3 py-2 text-sm font-medium transition ${
-    isActive
-      ? "bg-brand-ink text-white"
-      : "text-brand-ink/80 hover:bg-brand-ink/10"
-  }`;
-
-function Navbar() {
-  const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+function ThemeIcon({ isDark }) {
+  if (isDark) {
+    return (
+      <svg
+        aria-hidden="true"
+        className="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 4.75V3m0 18v-1.75M6.34 6.34 5.1 5.1m13.8 13.8-1.24-1.24M4.75 12H3m18 0h-1.75M6.34 17.66 5.1 18.9m13.8-13.8-1.24 1.24M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.8"
+        />
+      </svg>
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-brand-ink/10 bg-brand-sand/85 backdrop-blur">
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M20.4 14.5A8.5 8.5 0 1 1 9.5 3.6a7.1 7.1 0 1 0 10.9 10.9Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function Navbar({ isDark, onToggleTheme }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { token } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
+  const nextThemeLabel = isDark
+    ? "Switch to light mode"
+    : "Switch to dark mode";
+
+  return (
+    <header
+      className={`sticky top-0 z-30 border-b backdrop-blur transition-colors ${
+        isDark
+          ? "border-slate-700/60 bg-slate-950/85"
+          : "border-brand-ink/10 bg-brand-sand/85"
+      }`}
+    >
       <div className="container-pad flex items-center justify-between py-3">
-        <Link to="/" className="font-display text-2xl font-bold text-brand-ink">
-          Hotel<span className="text-brand-coral">Hive</span>
+        <Link
+          to="/"
+          className={`font-display text-2xl font-bold ${
+            isDark ? "text-slate-100" : "text-brand-ink"
+          }`}
+        >
+          Hotel
+          <span className={isDark ? "text-orange-300" : "text-brand-coral"}>
+            Hive
+          </span>
         </Link>
 
-        <button
-          className="btn-secondary md:hidden"
-          onClick={() => setOpen((prev) => !prev)}
-          type="button"
-        >
-          Menu
-        </button>
+        <nav className="flex items-center gap-2">
+          <button
+            className="btn-secondary"
+            onClick={onToggleTheme}
+            type="button"
+            aria-label={nextThemeLabel}
+            title={nextThemeLabel}
+          >
+            <ThemeIcon isDark={isDark} />
+          </button>
 
-        <nav className="hidden items-center gap-2 md:flex">
-          <NavLink to="/" className={navClass}>
-            Home
-          </NavLink>
-          <NavLink to="/hotels" className={navClass}>
-            Hotels
-          </NavLink>
-          {user ? (
-            <>
-              <NavLink to="/dashboard" className={navClass}>
-                Dashboard
-              </NavLink>
-              {user?.role === "admin" && (
-                <NavLink to="/admin/analytics" className={navClass}>
-                  Analytics
-                </NavLink>
-              )}
-              <button
-                className="btn-primary"
-                onClick={() => dispatch(logout())}
-                type="button"
-              >
-                Logout
-              </button>
-            </>
+          {token ? (
+            <button
+              className="btn-primary"
+              onClick={handleLogout}
+              type="button"
+            >
+              Logout
+            </button>
           ) : (
-            <>
-              <NavLink to="/login" className={navClass}>
-                Login
-              </NavLink>
-              <Link to="/register" className="btn-primary">
-                Join Now
-              </Link>
-            </>
+            <Link to="/login" className="btn-primary">
+              Login
+            </Link>
           )}
         </nav>
       </div>
-
-      {open && (
-        <div className="container-pad pb-3 md:hidden">
-          <div className="panel grid gap-2 p-3">
-            <NavLink to="/" className={navClass} onClick={() => setOpen(false)}>
-              Home
-            </NavLink>
-            <NavLink
-              to="/hotels"
-              className={navClass}
-              onClick={() => setOpen(false)}
-            >
-              Hotels
-            </NavLink>
-            {user ? (
-              <>
-                <NavLink
-                  to="/dashboard"
-                  className={navClass}
-                  onClick={() => setOpen(false)}
-                >
-                  Dashboard
-                </NavLink>
-                {user?.role === "admin" && (
-                  <NavLink
-                    to="/admin/analytics"
-                    className={navClass}
-                    onClick={() => setOpen(false)}
-                  >
-                    Analytics
-                  </NavLink>
-                )}
-                <button
-                  className="btn-primary"
-                  onClick={() => {
-                    dispatch(logout());
-                    setOpen(false);
-                  }}
-                  type="button"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <NavLink
-                  to="/login"
-                  className={navClass}
-                  onClick={() => setOpen(false)}
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  className="btn-primary text-center"
-                  onClick={() => setOpen(false)}
-                >
-                  Join Now
-                </NavLink>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 }

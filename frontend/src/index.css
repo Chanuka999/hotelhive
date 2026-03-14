@@ -10,6 +10,12 @@
   --sun: #e7684f;
 }
 
+html.dark {
+  --bg: #020617;
+  --ink: #e2e8f0;
+  --sun: #fb923c;
+}
+
 body {
   margin: 0;
   font-family: "Space Grotesk", sans-serif;
@@ -22,6 +28,24 @@ body {
     ),
     radial-gradient(circle at 85% 0%, rgba(77, 106, 87, 0.24), transparent 34%),
     linear-gradient(170deg, #fbf8f2 0%, #f4efe6 48%, #efe5d6 100%);
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
+}
+
+html.dark body {
+  background:
+    radial-gradient(
+      circle at 12% 15%,
+      rgba(251, 146, 60, 0.2),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 88% 10%,
+      rgba(56, 189, 248, 0.15),
+      transparent 30%
+    ),
+    linear-gradient(170deg, #0f172a 0%, #020617 55%, #111827 100%);
 }
 
 a {
@@ -36,10 +60,43 @@ a {
   @apply rounded-3xl border border-white/60 bg-white/75 shadow-soft backdrop-blur;
 }
 
+html.dark .panel {
+  @apply border-slate-700/60 bg-slate-900/75 text-slate-100;
+}
+
 .btn-primary {
   @apply rounded-xl bg-brand-coral px-4 py-2 font-medium text-white transition hover:-translate-y-0.5 hover:brightness-105;
 }
 
 .btn-secondary {
   @apply rounded-xl border border-brand-ink/20 px-4 py-2 font-medium transition hover:bg-brand-ink hover:text-white;
+}
+
+html.dark .btn-secondary {
+  @apply border-slate-600 text-slate-100 hover:bg-slate-100 hover:text-slate-900;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  @apply border-slate-600 bg-slate-800 text-slate-100;
+}
+
+html.dark .react-datepicker,
+html.dark .react-datepicker__header {
+  @apply border-slate-700 bg-slate-900 text-slate-100;
+}
+
+html.dark .react-datepicker__current-month,
+html.dark .react-datepicker-time__header,
+html.dark .react-datepicker-year-header,
+html.dark .react-datepicker__day-name,
+html.dark .react-datepicker__day {
+  color: #e2e8f0;
+}
+
+html.dark .react-datepicker__day--selected,
+html.dark .react-datepicker__day--keyboard-selected {
+  background-color: #fb923c;
+  color: #0f172a;
 }
