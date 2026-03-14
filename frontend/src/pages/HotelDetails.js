@@ -17,6 +17,8 @@ function HotelDetails() {
     return <LoadingSpinner />;
   }
 
+  const rooms = Array.isArray(selectedHotel.rooms) ? selectedHotel.rooms : [];
+
   return (
     <section className="container-pad py-10">
       <article className="panel overflow-hidden">
@@ -42,6 +44,35 @@ function HotelDetails() {
             <Link to="/hotels" className="btn-secondary">
               Back to Hotels
             </Link>
+          </div>
+
+          <div className="pt-4">
+            <h2 className="font-display text-2xl">Available Rooms</h2>
+            {rooms.length === 0 ? (
+              <p className="mt-2 text-sm text-brand-ink/70">
+                No active rooms currently listed for this hotel.
+              </p>
+            ) : (
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                {rooms.map((room) => (
+                  <div
+                    key={room._id}
+                    className="rounded-2xl border border-brand-ink/10 bg-white/70 p-4 text-sm"
+                  >
+                    <p className="font-semibold">{room.roomType}</p>
+                    <p className="mt-1 text-brand-ink/75">{room.description}</p>
+                    <p className="mt-2">Price: ${room.price} / night</p>
+                    <p>Availability: {room.availableRooms} rooms</p>
+                    {Array.isArray(room.amenities) &&
+                      room.amenities.length > 0 && (
+                        <p className="mt-2 text-xs text-brand-ink/70">
+                          Facilities: {room.amenities.join(", ")}
+                        </p>
+                      )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </article>
