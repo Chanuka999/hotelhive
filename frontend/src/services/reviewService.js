@@ -10,7 +10,25 @@ const createReview = async (payload) => {
   return data.review || data.data || data;
 };
 
+const getAllReviewsAdmin = async () => {
+  const { data } = await api.get("/reviews/admin/all");
+  return data.data || [];
+};
+
+const deleteReview = async (id) => {
+  const { data } = await api.delete(`/reviews/${id}`);
+  return data;
+};
+
+const deleteInappropriateReview = async (id) => {
+  const { data } = await api.delete(`/reviews/admin/${id}`);
+  return data;
+};
+
 export default {
   getHotelReviews,
   createReview,
+  getAllReviewsAdmin,
+  deleteReview,
+  deleteInappropriateReview,
 };

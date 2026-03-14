@@ -66,6 +66,19 @@ export const fetchCurrentUser = createAsyncThunk(
   },
 );
 
+export const updateCurrentUserProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (payload, thunkAPI) => {
+    try {
+      return await authService.updateProfile(payload);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        getApiErrorMessage(error, "Failed to update profile"),
+      );
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -124,6 +137,22 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload || {}));
+      })
+      .addCase(updateCurrentUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCurrentUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload || {}));
+        toast.success("Profile updated");
+      })
+      .addCase(updateCurrentUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(String(action.payload));
       });
   },
 });
