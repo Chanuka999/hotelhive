@@ -63,7 +63,7 @@ router.post("/register", async (req, res, next) => {
       password,
       phone,
       role: role === "admin" ? "admin" : "user",
-      isVerified: false,
+      isVerified: true,
     });
 
     const emailVerificationToken = user.getEmailVerificationToken();
@@ -154,12 +154,6 @@ router.post("/login", async (req, res, next) => {
       });
     }
 
-    if (!user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        error: "Please verify your email before logging in.",
-      });
-    }
 
     return sendTokenResponse(user, 200, res);
   } catch (error) {
