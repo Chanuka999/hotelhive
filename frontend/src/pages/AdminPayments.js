@@ -14,7 +14,8 @@ function PaymentBadge({ status }) {
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        classes[status] || "bg-brand-ink/10 text-brand-ink"
+        classes[status] ||
+        "bg-brand-ink/10 text-brand-ink dark:bg-slate-700/70 dark:text-slate-100"
       }`}
     >
       {status}

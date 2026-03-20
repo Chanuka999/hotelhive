@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
@@ -22,6 +22,8 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import AdminRoute from "./components/common/AdminRoute";
 
+import Dining from "./pages/Dining";
+
 const getInitialTheme = () => {
   const saved = localStorage.getItem("theme");
   if (saved === "dark" || saved === "light") {
@@ -36,6 +38,8 @@ const getInitialTheme = () => {
 function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const isDark = theme === "dark";
+  const location = useLocation();
+  const hideLayout = ["/login", "/register"].includes(location.pathname);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
@@ -52,12 +56,13 @@ function App() {
         isDark ? "bg-slate-950 text-slate-100" : "bg-brand-sand text-brand-ink"
       }`}
     >
-      <Navbar isDark={isDark} onToggleTheme={toggleTheme} />
+      {!hideLayout && <Navbar isDark={isDark} onToggleTheme={toggleTheme} />}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
+          <Route path="/dining" element={<Dining />} />
           <Route
             path="/booking/:hotelId"
             element={
@@ -159,7 +164,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 }

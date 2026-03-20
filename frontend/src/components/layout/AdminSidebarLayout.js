@@ -162,37 +162,70 @@ const adminLinks = [
 ];
 
 const linkClass = ({ isActive }) =>
-  `group flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition ${
+  `admin-nav-link group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all duration-300 ${
     isActive
-      ? "bg-brand-ink text-white shadow-sm dark:bg-slate-100 dark:text-slate-900"
-      : "text-brand-ink/80 hover:bg-brand-ink/10 hover:text-brand-ink dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+      ? "admin-nav-link-active bg-brand-ink text-white shadow-lg shadow-brand-ink/20 dark:bg-slate-700 dark:text-slate-50 dark:shadow-none"
+      : "text-brand-ink/60 hover:bg-slate-50 hover:text-brand-ink dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200"
   }`;
 
 function AdminSidebarLayout({ children }) {
   return (
-    <div className="w-full py-6">
-      <div className="grid gap-4 lg:grid-cols-[290px,minmax(0,1fr)] lg:items-start lg:gap-6">
-        <aside className="panel flex flex-col lg:sticky lg:top-20 lg:min-h-[calc(100vh-6.5rem)]">
-          <div className="border-b border-brand-ink/10 px-4 py-4 dark:border-slate-700">
-            <h2 className="font-display text-2xl">Admin Panel</h2>
-            <p className="text-xs text-brand-ink/65 dark:text-slate-300">
-              Management navigation
-            </p>
-          </div>
-          <nav className="grid auto-cols-[minmax(140px,1fr)] grid-flow-col gap-2 overflow-x-auto p-3 lg:flex-1 lg:grid-flow-row lg:auto-cols-auto lg:overflow-x-visible lg:overflow-y-auto">
-            {adminLinks.map((link) => (
-              <NavLink key={link.to} to={link.to} className={linkClass}>
-                <span className="opacity-85 transition-opacity group-hover:opacity-100">
-                  {link.icon}
-                </span>
-                <span className="whitespace-nowrap">{link.label}</span>
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
+    <div className="w-full bg-slate-50/50 dark:bg-slate-950/20 min-h-screen">
+      {/* Horizontal Navbar */}
+      <header className="sticky top-0 z-50 border-b border-brand-ink/5 bg-white/70 backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/70">
+        <div className="mx-auto max-w-[1600px] px-4 md:px-8 flex items-center justify-between h-20">
+          <div className="flex items-center gap-8">
+            <div>
+              <h2 className="font-display text-xl font-bold tracking-tight text-brand-ink dark:text-slate-100 lg:text-2xl">
+                Admin <span className="text-brand-coral">Portal</span>
+              </h2>
+              <p className="hidden md:block text-[10px] font-bold uppercase tracking-[0.2em] text-brand-ink/40 dark:text-slate-400">
+                Management Suite
+              </p>
+            </div>
 
-        <div className="min-w-0 px-4 md:px-6 lg:pr-6">{children}</div>
-      </div>
+            <nav className="hidden h-12 items-center gap-1 rounded-2xl bg-slate-100/50 p-1 dark:bg-slate-800/50 lg:flex">
+              {adminLinks.map((link) => (
+                <NavLink key={link.to} to={link.to} className={linkClass}>
+                  <span className="opacity-80 group-[.admin-nav-link-active]:text-white">
+                    {link.icon}
+                  </span>
+                  <span className="whitespace-nowrap px-1">{link.label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden border-l border-brand-ink/5 pl-4 dark:border-slate-700/30 sm:block">
+              <div className="flex items-center gap-2 rounded-full bg-slate-100/50 px-3 py-1 dark:bg-slate-800/50">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)] animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-ink/40 dark:text-slate-400">System Live</span>
+              </div>
+            </div>
+            {/* User profile could go here */}
+          </div>
+        </div>
+        
+        {/* Mobile Navigation - Scrollable */}
+        <nav className="lg:hidden flex items-center gap-2 overflow-x-auto p-3 bg-white/50 dark:bg-slate-800/20 scrollbar-hide border-t border-brand-ink/5 dark:border-slate-700/30">
+          {adminLinks.map((link) => (
+            <NavLink key={link.to} to={link.to} className={linkClass}>
+              <span className="opacity-80 group-[.admin-nav-link-active]:text-white">
+                {link.icon}
+              </span>
+              <span className="whitespace-nowrap text-xs">{link.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="mx-auto max-w-[1600px] py-8 px-4 md:px-8">
+        <div className="overflow-hidden rounded-3xl border border-brand-ink/5 bg-white/60 shadow-xl shadow-slate-200/50 dark:border-slate-700/50 dark:bg-slate-800/40 dark:shadow-none">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { hotelImages } from "../../utils/hotelImages";
 
 function HotelCard({ hotel }) {
   const rooms = Array.isArray(hotel.rooms) ? hotel.rooms : [];
@@ -10,9 +11,23 @@ function HotelCard({ hotel }) {
     ? Math.min(...rooms.map((room) => Number(room.price) || 0))
     : Number(hotel.basePrice) || 0;
 
+  // Pick a sample image for demo hotels (by index or fallback)
+  let imgSrc = hotelImages[0];
+  if (hotel._id === "demo-2" || hotel.name?.includes("Surf"))
+    imgSrc = hotelImages[1];
+  if (hotel._id === "demo-3" || hotel.name?.includes("Lighthouse"))
+    imgSrc = hotelImages[2];
+  if (hotel.name?.includes("Aadiv")) imgSrc = hotelImages[3];
+
   return (
     <article className="panel overflow-hidden transition hover:-translate-y-1">
-      <div className="h-44 bg-gradient-to-tr from-brand-moss/70 to-brand-coral/70" />
+      <img
+        src={imgSrc}
+        alt={hotel.name}
+        className="h-44 w-full object-cover"
+        loading="lazy"
+        style={{ background: "#eee" }}
+      />
       <div className="space-y-3 p-5">
         <div>
           <h3 className="font-display text-2xl">{hotel.name}</h3>

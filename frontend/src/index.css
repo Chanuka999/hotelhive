@@ -64,6 +64,95 @@ html.dark .panel {
   @apply border-slate-700/60 bg-slate-900/75 text-slate-100;
 }
 
+.analytics-muted {
+  color: rgba(31, 37, 47, 0.72);
+}
+
+html.dark .analytics-muted {
+  color: rgba(226, 232, 240, 0.84);
+}
+
+.analytics-soft-card {
+  @apply rounded-xl bg-white/60 p-3;
+}
+
+html.dark .analytics-soft-card {
+  @apply border border-slate-700/60 bg-slate-800/80;
+}
+
+/* Global contrast safety net for repeated utility classes across pages */
+.text-brand-ink\/65 {
+  color: rgba(31, 37, 47, 0.74);
+}
+
+.text-brand-ink\/70 {
+  color: rgba(31, 37, 47, 0.8);
+}
+
+.text-brand-ink\/75 {
+  color: rgba(31, 37, 47, 0.86);
+}
+
+.text-brand-ink\/80 {
+  color: rgba(31, 37, 47, 0.9);
+}
+
+html.dark .text-brand-ink\/65,
+html.dark .text-brand-ink\/70,
+html.dark .text-brand-ink\/75,
+html.dark .text-brand-ink\/80 {
+  color: rgba(226, 232, 240, 0.9);
+}
+
+html.dark .bg-white\/50 {
+  background-color: rgba(30, 41, 59, 0.68);
+}
+
+html.dark .bg-white\/60 {
+  background-color: rgba(30, 41, 59, 0.74);
+}
+
+html.dark .bg-white\/70 {
+  background-color: rgba(30, 41, 59, 0.8);
+}
+
+html.dark .border-brand-ink\/10,
+html.dark .border-brand-ink\/15,
+html.dark .border-brand-ink\/20 {
+  border-color: rgba(100, 116, 139, 0.62);
+}
+
+.admin-sidebar-subtitle {
+  color: rgba(31, 37, 47, 0.72);
+}
+
+.admin-nav-link {
+  color: rgba(31, 37, 47, 0.9);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-nav-link:hover {
+  background-color: rgba(31, 37, 47, 0.08);
+  color: rgba(17, 24, 39, 1);
+}
+
+.admin-nav-link-active {
+  color: #ffffff;
+}
+
+html.dark .admin-sidebar-subtitle {
+  color: rgba(226, 232, 240, 0.86);
+}
+
+html.dark .admin-nav-link {
+  color: rgba(226, 232, 240, 0.94);
+}
+
+html.dark .admin-nav-link:hover {
+  background-color: rgba(30, 41, 59, 0.78);
+  color: rgba(248, 250, 252, 1);
+}
+
 .btn-primary {
   @apply rounded-xl bg-brand-coral px-4 py-2 font-medium text-white transition hover:-translate-y-0.5 hover:brightness-105;
 }
