@@ -21,6 +21,26 @@ const adminLinks = [
     ),
   },
   {
+    to: "/admin/analytics?tab=hotels",
+    label: "Hotels",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        className="h-4 w-4"
+        aria-hidden="true"
+      >
+        <path
+          d="M3 21h18M3 7v14M21 7v14M3 7l9-4 9 4M5 21V11m4 10V11m6 10V11m4 10V11"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
     to: "/admin/reports",
     label: "Reports",
     icon: (

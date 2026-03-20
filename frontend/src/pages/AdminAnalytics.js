@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   ResponsiveContainer,
   BarChart,
@@ -50,12 +51,19 @@ function StatCard({ title, value, icon, colorClass = "bg-brand-ink" }) {
 }
 
 function AdminAnalytics() {
+  const location = useLocation();
   const [analytics, setAnalytics] = useState(null);
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isHotelsOpen, setIsHotelsOpen] = useState(false);
+  const [isHotelsOpen, setIsHotelsOpen] = useState(
+    new URLSearchParams(location.search).get("tab") === "hotels",
+  );
+
+  useEffect(() => {
+    setIsHotelsOpen(new URLSearchParams(location.search).get("tab") === "hotels");
+  }, [location.search]);
   const [hotelForm, setHotelForm] = useState({
     name: "",
     description: "",
@@ -64,6 +72,7 @@ function AdminAnalytics() {
     starRating: 3,
     basePrice: 0,
     discountPercent: 0,
+    image: null,
   });
 
   useEffect(() => {
@@ -94,18 +103,21 @@ function AdminAnalytics() {
   const createHotelHandler = async (e) => {
     e.preventDefault();
     setMessage("");
+    const formData = new FormData();
+    formData.append("name", hotelForm.name);
+    formData.append("description", hotelForm.description);
+    formData.append("starRating", hotelForm.starRating);
+    formData.append("basePrice", hotelForm.basePrice);
+    formData.append("discountPercent", hotelForm.discountPercent);
+    formData.append("address[city]", hotelForm.city);
+    formData.append("address[country]", hotelForm.country);
+    
+    if (hotelForm.image) {
+      formData.append("images", hotelForm.image);
+    }
+
     try {
-      await hotelService.createHotel({
-        name: hotelForm.name,
-        description: hotelForm.description,
-        starRating: Number(hotelForm.starRating),
-        basePrice: Number(hotelForm.basePrice),
-        discountPercent: Number(hotelForm.discountPercent),
-        address: {
-          city: hotelForm.city,
-          country: hotelForm.country,
-        },
-      });
+      await hotelService.createHotel(formData);
       setMessage("Hotel collection updated successfully.");
       setHotelForm({
         name: "",
@@ -115,6 +127,7 @@ function AdminAnalytics() {
         starRating: 3,
         basePrice: 0,
         discountPercent: 0,
+        image: null,
       });
       await reloadHotels();
     } catch (err) {
@@ -482,7 +495,7 @@ function AdminAnalytics() {
           </>
         ) : (
           <div className="mx-auto max-w-5xl">
-            <div className="mb-10 rounded-3xl bg-white p-6 shadow-md dark:bg-slate-800/60 lg:p-8">
+            <div className="panel mb-10 p-6 lg:p-8">
               <h2 className="mb-6 text-2xl font-bold tracking-tight text-brand-ink dark:text-slate-100 italic">Create New <span className="text-brand-coral">Property</span></h2>
               {message && (
                 <div className="mb-6 flex items-center gap-3 rounded-2xl bg-brand-coral/5 p-4 text-sm font-semibold text-brand-coral border border-brand-coral/10">
@@ -524,6 +537,20 @@ function AdminAnalytics() {
                   <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-brand-ink/40 dark:text-slate-500">Offer Discount (%)</label>
                   <input type="number" className="w-full rounded-2xl border border-brand-ink/10 bg-slate-50 px-4 py-3 text-sm focus:border-brand-coral focus:ring-0 dark:border-slate-700 dark:bg-slate-900/50" placeholder="0" value={hotelForm.discountPercent} onChange={(e) => setHotelForm((prev) => ({ ...prev, discountPercent: e.target.value }))} />
                 </div>
+                <div className="lg:col-span-3">
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-brand-ink/40 dark:text-slate-500">Property Image</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    className="w-full rounded-2xl border border-dashed border-brand-ink/10 bg-slate-50 px-4 py-3 text-sm focus:border-brand-coral focus:ring-0 dark:border-slate-700 dark:bg-slate-900/50" 
+                    onChange={(e) => setHotelForm((prev) => ({ ...prev, image: e.target.files[0] }))} 
+                  />
+                  {hotelForm.image && (
+                    <p className="mt-2 text-[10px] font-bold text-brand-coral uppercase tracking-widest italic">
+                      Selected: {hotelForm.image.name}
+                    </p>
+                  )}
+                </div>
                 <button className="btn-primary flex items-center justify-center gap-2 py-4 lg:col-span-3" type="submit">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>
                   Initialize Portfolio Property
@@ -540,9 +567,13 @@ function AdminAnalytics() {
                 <div className="rounded-3xl border border-dashed border-brand-ink/10 p-12 text-center text-brand-ink/30">No hotels in database.</div>
               ) : (
                 hotels.map((hotel) => (
-                  <div key={hotel._id} className="group flex flex-col gap-6 rounded-3xl bg-white p-4 transition-all hover:bg-slate-50 dark:bg-slate-800/40 dark:hover:bg-slate-800/60 md:flex-row md:items-center">
+                  <div key={hotel._id} className="panel group flex flex-col gap-6 p-4 md:flex-row md:items-center">
                     <div className="h-24 w-full shrink-0 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900 md:h-28 md:w-32 lg:h-32 lg:w-40">
-                      <img src={`https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=400&h=300&sig=${hotel._id}`} alt={hotel.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                      {hotel.images?.[0]?.url ? (
+                        <img src={hotel.images[0].url} alt={hotel.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                      ) : (
+                        <img src={`https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=400&h=300&sig=${hotel._id}`} alt={hotel.name} className="h-full w-full object-cover opacity-50 transition duration-500 group-hover:scale-110" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3">

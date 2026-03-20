@@ -16,35 +16,21 @@ connectDB();
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
-app.use(mongoSanitize());
-app.use(xss());
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
-app.use("/api/", limiter);
-
-// Body parser middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+// CORS - (MOVED TO TOP TO PREVENT PREFLIGHT ERRORS)
 const allowedOrigins = [
   ...(process.env.CLIENT_URLS ? process.env.CLIENT_URLS.split(",") : []),
   ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
   "http://localhost:3000",
   "http://localhost:5173",
+  "https://hotelhive-silk.vercel.app",
 ]
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-// CORS
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
@@ -53,6 +39,22 @@ app.use(
     credentials: true,
   }),
 );
+
+// Security middleware
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(xss());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 1000, // limit each IP to 1000 requests per windowMs
+});
+app.use("/api/", limiter);
+
+// Body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));

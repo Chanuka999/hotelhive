@@ -38,14 +38,10 @@ exports.getHotels = asyncHandler(async (req, res) => {
       match: { isActive: true },
     });
 
-  const availableHotels = hotels.filter((hotel) =>
-    (hotel.rooms || []).some((room) => room.availableRooms > 0),
-  );
-
   res.status(200).json({
     success: true,
-    count: availableHotels.length,
-    data: availableHotels,
+    count: hotels.length,
+    data: hotels,
   });
 });
 

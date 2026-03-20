@@ -28,13 +28,13 @@ const searchHotels = async (params) => {
   }
 };
 
-const createHotel = async (payload) => {
-  const { data } = await api.post("/hotels", payload);
+const createHotel = async (formData) => {
+  const { data } = await api.post("/hotels", formData);
   return data.data || data.hotel || data;
 };
 
-const updateHotel = async (id, payload) => {
-  const { data } = await api.put(`/hotels/${id}`, payload);
+const updateHotel = async (id, formData) => {
+  const { data } = await api.put(`/hotels/${id}`, formData);
   return data.data || data.hotel || data;
 };
 

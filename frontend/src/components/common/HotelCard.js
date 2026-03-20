@@ -11,13 +11,17 @@ function HotelCard({ hotel }) {
     ? Math.min(...rooms.map((room) => Number(room.price) || 0))
     : Number(hotel.basePrice) || 0;
 
-  // Pick a sample image for demo hotels (by index or fallback)
-  let imgSrc = hotelImages[0];
-  if (hotel._id === "demo-2" || hotel.name?.includes("Surf"))
-    imgSrc = hotelImages[1];
-  if (hotel._id === "demo-3" || hotel.name?.includes("Lighthouse"))
-    imgSrc = hotelImages[2];
-  if (hotel.name?.includes("Aadiv")) imgSrc = hotelImages[3];
+  // Prioritize uploaded images, otherwise use demo images
+  let imgSrc = hotel.images?.[0]?.url;
+  
+  if (!imgSrc) {
+    imgSrc = hotelImages[0];
+    if (hotel._id === "demo-2" || hotel.name?.includes("Surf"))
+      imgSrc = hotelImages[1];
+    if (hotel._id === "demo-3" || hotel.name?.includes("Lighthouse"))
+      imgSrc = hotelImages[2];
+    if (hotel.name?.includes("Aadiv")) imgSrc = hotelImages[3];
+  }
 
   return (
     <article className="panel overflow-hidden transition hover:-translate-y-1">

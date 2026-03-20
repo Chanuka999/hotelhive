@@ -22,7 +22,24 @@ function HotelDetails() {
   return (
     <section className="container-pad py-10">
       <article className="panel overflow-hidden">
-        <div className="h-56 bg-gradient-to-r from-brand-clay to-brand-moss" />
+        <div className="h-64 overflow-hidden relative">
+          {selectedHotel.images?.[0]?.url ? (
+            <img 
+              src={selectedHotel.images[0].url} 
+              alt={selectedHotel.name} 
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-r from-brand-clay to-brand-moss relative overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200" 
+                alt="Banner Placeholder" 
+                className="h-full w-full object-cover opacity-50 mix-blend-overlay"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/40 to-transparent" />
+            </div>
+          )}
+        </div>
         <div className="space-y-4 p-6 md:p-8">
           <h1 className="font-display text-4xl">{selectedHotel.name}</h1>
           <p className="text-brand-ink/80">{selectedHotel.description}</p>

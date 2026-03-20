@@ -107,6 +107,12 @@ function AdminRooms() {
       return;
     }
 
+    if (!form.description) {
+      setMessage("Please add a description for the room.");
+      setSaving(false);
+      return;
+    }
+
     setSaving(true);
     setMessage("");
 
@@ -141,7 +147,12 @@ function AdminRooms() {
       resetForm();
       await refreshRooms();
     } catch (error) {
-      setMessage(error?.response?.data?.error || "Failed to save room");
+      const errorMsg = error?.response?.data?.error;
+      setMessage(
+        Array.isArray(errorMsg)
+          ? errorMsg[0] // Take the first error if it's an array
+          : errorMsg || "Failed to save room",
+      );
     } finally {
       setSaving(false);
     }
@@ -499,7 +510,7 @@ function AdminRooms() {
               {rooms.map((room) => (
                 <article
                   key={room._id}
-                  className="overflow-hidden rounded-3xl border border-brand-ink/10 bg-white/85"
+                  className="panel overflow-hidden"
                 >
                   <div className="h-44 bg-brand-sand">
                     {room.images?.[0]?.url ? (
